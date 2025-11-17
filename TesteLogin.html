@@ -43,28 +43,13 @@
     </nav>
 
     <main>
-        <div class="cadastro-container">
+        <div class="login-container">
             <h1>Crie sua conta</h1>
 
-            <div class="cadastro-div">
-
+            <div class="login-div">
 
                 <label>Nome</label>
                 <input type="text" id="input_nome" placeholder="Insira o nome">
-
-                <label for="agencia">Agência de Segurança Pública</label>
-                <select id="agencia" name="agencia" required>
-                    <option value="" disabled selected>Selecione uma opção</option>
-                    <option value="policia-militar">Polícia Militar</option>
-                    <option value="policia-civil">Polícia Civil</option>
-                    <option value="gcm">GCM</option>
-                    <option value="agente-prisional">Agente Prisional</option>
-                    <option value="agente-federal">Agente Federal</option>
-                    <option value="militar-eb">Militar EB</option>
-                    <option value="militar-mb">Militar MB</option>
-                    <option value="militar-fa">Militar FA</option>
-                    <option value="na">N/A</option>
-                </select>
 
                 <label>Email</label>
                 <input type="text" id="input_email" placeholder="Insira o email">
@@ -72,10 +57,7 @@
                 <label>Senha</label>
                 <input type="password" id="input_senha" placeholder="Insira a senha">
 
-                <label>Confirmar Senha</label>
-                <input type="password" id="input_Confsenha" placeholder="Confirme a senha">
-
-                <button onclick="cadastrar()">Cadastrar</button>
+                <button onclick="login()">Cadastrar</button>
 
                 <p id="mensagemErro1" style="display:none; color:red"></p>
             </div>
