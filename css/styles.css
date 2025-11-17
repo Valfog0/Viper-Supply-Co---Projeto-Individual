@@ -86,12 +86,6 @@
   box-sizing: border-box;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  :root {
-    scroll-behavior: smooth;
-  }
-}
-
 body {
   margin: 0;
   font-family: var(--bs-body-font-family);
@@ -446,14 +440,6 @@ legend + * {
   -webkit-appearance: textfield;
 }
 
-/* rtl:raw:
-[type="tel"],
-[type="url"],
-[type="email"],
-[type="number"] {
-  direction: ltr;
-}
-*/
 ::-webkit-search-decoration {
   -webkit-appearance: none;
 }
@@ -3606,18 +3592,63 @@ textarea.form-control-lg {
   border-top-right-radius: 0;
 }
 
-.nav {
-  --bs-nav-link-padding-x: 1rem;
-  --bs-nav-link-padding-y: 0.5rem;
-  --bs-nav-link-font-weight: ;
-  --bs-nav-link-color: var(--bs-link-color);
-  --bs-nav-link-hover-color: var(--bs-link-hover-color);
-  --bs-nav-link-disabled-color: #6c757d;
-  display: flex;
-  flex-wrap: wrap;
-  padding-left: 0;
-  margin-bottom: 0;
-  list-style: none;
+.cadastro-container {
+  max-width: 400px;
+  margin: 0 auto 60px;
+  background-color: #1c1c1c;
+  padding: 30px;
+  border-radius: 8px;
+}
+
+.cadastro-container h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #fdd835;
+}
+
+.cadastro-form label {
+  display: block;
+  margin-top: 15px;
+  margin-bottom: 5px;
+}
+
+.cadastro-form input {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  background-color: #2c2c2c;
+  color: #fff;
+}
+
+select {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  background-color: #2c2c2c;
+  color: #fff;
+  font-size: 1em;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+select:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #fdd835;
+}
+
+
+.cadastro-form button {
+  margin-top: 20px;
+  width: 100%;
+  padding: 12px;
+  background-color: #fdd835;
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
 }
 
 .nav-link {
@@ -3629,11 +3660,7 @@ textarea.form-control-lg {
   text-decoration: none;
   transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
 }
-@media (prefers-reduced-motion: reduce) {
-  .nav-link {
-    transition: none;
-  }
-}
+
 .nav-link:hover, .nav-link:focus {
   color: var(--bs-nav-link-hover-color);
 }
