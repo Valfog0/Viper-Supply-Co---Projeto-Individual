@@ -382,9 +382,9 @@ button:not(:disabled),
 
 }
 
-.cadastro-container {
+.log-container {
   max-width: 500px;
-  max-height: 1000px;
+  max-height: 900px;
   margin: 150px auto 60px;
   background-color: #1c1c1c;
   padding: 30px;
@@ -392,19 +392,19 @@ button:not(:disabled),
 
 };
 
-.cadastro-container h1 {
+.log-container h1 {
   text-align: center;
-  margin-bottom: 2%;
+  margin-bottom: 20px;
   color: #fdd835;
 }
 
-.cadastro-div label {
+.log-div label {
   display: block;
   margin-top: 15px;
   margin-bottom: 5px;
 }
 
-.cadastro-div input {
+.log-div input {
   width: 100%;
   padding: 20px;
   border: none;
@@ -413,7 +413,7 @@ button:not(:disabled),
   color: #fff;
 }
 
-.cadastro-div button {
+.log-div button {
   background-color: #0fb8f1;
   color: #000;
   width: 400px;
@@ -445,20 +445,6 @@ select:focus {
   outline: none;
   box-shadow: 0 0 0 2px #fdd835;
 }
-
-.select-topicos {
-  width: 100%;
-  padding: 8px;
-  font-size: 16px;
-  background-color: #111; /* fundo escuro */
-  color: white;
-  border: 1px solid #444;
-  border-radius: 4px;
-}
-.select-topicos option {
-  padding: 6px;
-}
-
 
 .nav-link {
   display: block;
