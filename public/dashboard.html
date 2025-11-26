@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>Dashboard Viper Supply Co.</title>
+    <link rel="icon" type="image/x-icon" href="assets/favicon.jpg" />
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700" rel="stylesheet" type="text/css" />
+    <link href="css/Cad.css" rel="stylesheet" /> 
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body id="page-top">
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
+        <div class="container">
+            <img class="logo" src="assets/img/Logo_viper_Preto.jpg" alt="Logo Viper">
+            <a class="text" href="index.html"> The Viper Supply Co. </a>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav text-uppercase ms-auto py-4 py-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Início</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#services">Por que Viper?</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#portfolio">Colaboradores</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#about">Sobre</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <main style="padding-top: 100px;"> 
+        <h1 style="text-align: center; margin-top: 20px;">Visão Geral dos Interesses dos Agentes</h1>
+
+        <div style="width: 80%; margin: 50px auto;">
+            <canvas id="proporcaoChart"></canvas>
+        </div>
+    </main>
+
+    <script>
+
+        var proporcaoChart;
+
+        function atualizarGrafico() {
+            fetch("/dashboard/proporcoes")
+                .then(function(response) {
+                    if (response.ok) {
+                        return response.json();
+                    }
+                    throw new Error('Falha ao carregar dados da dashboard.');
+                })
+                .then(function(dadosBrutos) {
+                    console.log("Dados recebidos:", dadosBrutos);
+                    
+                    var dadosProcessados = processarDados(dadosBrutos);
+                    renderizarGrafico(dadosProcessados);
+
+                })
+                .catch(function(error) {
+                    console.error("Erro no fetch da dashboard:", error);
+                });
+        }
+
+        // inicia o graph
+        window.onload = function() {
+            atualizarGrafico(); 
+            setInterval(atualizarGrafico, 5000); 
+        };
+
+        function processarDados(dados) {
+            var grupos = {};
+            var totalGeral = 0;
+            var i;
+            var j;
+
+            // agrupa por Cargo e Região, e calcula os topicos de interesse
+        
+            for (i = 0; i < dados.length; i++) {
+                var item = dados[i];
+                var chave = item.cargo + ' - ' + item.regiao;
+                
+                if (!grupos[chave]) {
+                    grupos[chave] = { 
+                        cargo: item.cargo, 
+                        regiao: item.regiao, 
+                        interesses: [], 
+                        totalInteressesNoGrupo: 0 
+                    };
+                }
+                grupos[chave].interesses.push({
+                    nome: item.interesse,
+                    contagem: item.total_interessados
+                });
+                grupos[chave].totalInteressesNoGrupo += item.total_interessados;
+                totalGeral += item.total_interessados;
+            }
+
+            //calcula proporção
+            var labels = [];
+            var datasets = [];
+            var cores = ['#ffc800', '#04ffee', '#dc3545', '#198754'];
+            var datasetsMap = {}; 
+            var todosInteresses = [];
+            var tempSet = {};
+
+            // verifica interesses
+            for (i = 0; i < dados.length; i++) {
+                tempSet[dados[i].interesse] = true;
+            }
+            
+            //set de volta para array
+            for (var interesse in tempSet) {
+                if (tempSet.hasOwnProperty(interesse)) {
+                    todosInteresses.push(interesse);
+                }
+            }
+
+            for (i = 0; i < todosInteresses.length; i++) {
+                var interesseAtual = todosInteresses[i];
+                datasetsMap[interesseAtual] = {
+                    label: interesseAtual,
+                    data: [],
+                    backgroundColor: cores[i % cores.length]
+                };
+            }
+
+            // adiciona as chaves dos grupos 
+            for (var chave in grupos) {
+                if (grupos.hasOwnProperty(chave)) {
+                    labels.push(chave);
+                    
+                    for (i = 0; i < todosInteresses.length; i++) {
+                        datasetsMap[todosInteresses[i]].data.push(0);
+                    }
+
+                    var grupo = grupos[chave];
+                    var indexLabel = labels.length - 1;
+
+                    // Preenche os dados calculando a porcentagem - REFORÇO DE MATEMATICA
+                    for (j = 0; j < grupo.interesses.length; j++) {                                   // chave antes de array
+                        var interesse = grupo.interesses[j];
+                        var porcentagem = (interesse.contagem / grupo.totalInteressesNoGrupo) * 100;
+                        datasetsMap[interesse.nome].data[indexLabel] = porcentagem;
+                        
+                        console.log(Math.round(porcentagem) + '% dos ' + grupo.cargo + ' da região ' + grupo.regiao + ' têm interesse em ' + interesse.nome + '.');
+                    }
+                }
+            }
+
+            // Transforma o datasetsMap em um array para o Chart.js
+            for (var interesse in datasetsMap) {
+                if (datasetsMap.hasOwnProperty(interesse)) {
+                    datasets.push(datasetsMap[interesse]);
+                }
+            }
+
+
+            return { labels: labels, datasets: datasets };
+        }
+
+
+        function renderizarGrafico(dadosProcessados) {
+            var ctx = document.getElementById('proporcaoChart');
+
+            // att o graph
+            if (proporcaoChart) {
+                proporcaoChart.data.labels = dadosProcessados.labels;
+                proporcaoChart.data.datasets = dadosProcessados.datasets;
+                proporcaoChart.update();
+                return;
+            }
+
+            // cria o grafico
+            proporcaoChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: dadosProcessados.labels,
+                    datasets: dadosProcessados.datasets
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            stacked: true,
+                            title: {
+                                display: true,
+                                text: 'Cargo e Região'
+                            }
+                        },
+                        y: {
+                            stacked: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Proporção de Interesse (%)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Distribuição de Tópicos de Interesse por Grupo'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    var label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    label += context.parsed.y.toFixed(2) + ' %';
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

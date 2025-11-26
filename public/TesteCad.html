@@ -7,14 +7,11 @@
     <meta name="description" content="" />
     <meta name="author" content="" />
     <title>Cadastro Viper Supply Co.</title>
-    <!-- Ícone -->
+
     <link rel="icon" type="image/x-icon" href="assets/favicon.jpg" />
-    <!-- Fontes ícones -->
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
-    <!-- Google fontes-->
     <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css" />
     <link href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700" rel="stylesheet" type="text/css" />
-    <!-- Tema CSS-->
     <link href="css/Cad.css" rel="stylesheet" />
 
 </head>
@@ -32,9 +29,6 @@
                     <li class="nav-item"><a class="nav-link" href="#about">Sobre</a></li>
                     <li class="nav-item"><a class="nav-link nav-box" href="TesteCad.html">Cadastro</a></li>
                     <li class="nav-item"><a class="nav-link nav-box" href="TesteLogin.html">Login</a></li>
-
-
-
             </div>
             </ul>
         </div>
@@ -55,26 +49,34 @@
                 <label for="agencia">Agência de Segurança Pública</label>
                 <select id="agencia" name="agencia" required>
                     <option value="" disabled selected>Selecione uma opção</option>
-                    <option value="policia-militar">Polícia Militar</option>
-                    <option value="policia-civil">Polícia Civil</option>
-                    <option value="gcm">GCM</option>
-                    <option value="agente-prisional">Agente Prisional</option>
-                    <option value="agente-federal">Agente Federal</option>
-                    <option value="militar-eb">Militar EB</option>
-                    <option value="militar-mb">Militar MB</option>
-                    <option value="militar-fa">Militar FA</option>
-                    <option value="na">N/A</option>
+                    <option value="1">Polícia Militar</option>
+                    <option value="2">Policial Civil</option>
+                    <option value="3">GCM</option>
+                    <option value="4">Agente Prisional</option>
+                    <option value="5">Agente Federal</option>
+                    <option value="6">Militar EB</option>
+                    <option value="7">Militar MB</option>
+                    <option value="8">Militar FA</option>
+                    <option value="9">N/A</option>
+                </select>
+
+                <label for="regiao">Região</label>
+                <select id="regiao" name="regiao" required>
+                    <option value="" disabled selected>Selecione sua Região</option>
+                    <option value="1">Norte</option>
+                    <option value="2">Nordeste</option>
+                    <option value="3">Sul</option>
+                    <option value="4">Sudeste</option>
+                    <option value="5">Centro Oeste</option>
                 </select>
 
                 <label for="topicos">Área de Interesse</label>
                 <select id="topicos" name="topicos" multiple size="4" class="select-topicos">
-                    <option value="equipamentos">Equipamentos Operacionais</option>
-                    <option value="cybersec">CyberSec</option>
-                    <option value="armamento">Instrução de Armamento e Tiro</option>
-                    <option value="balistica">Balística</option>
+                    <option value="1">Equipamentos Operacionais</option>
+                    <option value="2">CyberSec</option>
+                    <option value="3">Instrução de Armamento e Tiro</option>
+                    <option value="4">Balística</option>
                 </select>
-
-
 
                 <label>Email</label>
                 <input type="text" id="input_email" placeholder="Insira o email">
@@ -87,36 +89,74 @@
 
                 <button onclick="cadastrar()">Cadastrar</button>
 
-                <p id="mensagemErro1" style="display:none; color:red"></p>
+                <div id="div_aguardar" style="display:none; color:blue; margin-top: 10px;">Aguardando...</div>
+                <p id="mensagemErro1" style="display:none; color:red; margin-top: 10px;"></p>
+
             </div>
         </div>
-
-
     </main>
 </body>
 
 </html>
 <script>
+
+    // funcao de loading
+    function aguardar() {
+        div_aguardar.style.display = "block";
+        mensagemErro1.style.display = "none";
+        mensagemErro1.innerHTML = '';
+    }
+
+    function finalizarAguardar(textoErro) {
+        div_aguardar.style.display = "none";
+
+        if (textoErro) {
+            mensagemErro1.style.display = "block";
+            mensagemErro1.style.color = "red";
+            mensagemErro1.innerHTML = textoErro;
+        } else {
+            mensagemErro1.style.display = "none";
+        }
+    }
+
+
     function cadastrar() {
 
         var nomeVar = input_nome.value.trim();
         var emailVar = input_email.value.trim();
         var senhaVar = input_senha.value;
         var ConfsenhaVar = input_Confsenha.value;
-        var houveErro = false;
 
+    
+        var fkCargoVar = agencia.value;
+        var fkRegiaoVar = regiao.value;
 
-        if (nomeVar == "" || emailVar == "" || senhaVar == "" || ConfsenhaVar == "") {
-            houveErro = true;
-            mensagemErro1.innerHTML += "Não podem ter campos vazios!";
+        // id dos topicos selecionados
+        var selectTopicos = document.getElementById('topicos');
+        var topicosSelecionados = [];
+        for (var i = 0; i < selectTopicos.options.length; i++) {
+            if (selectTopicos.options[i].selected) {
+                topicosSelecionados.push(selectTopicos.options[i].value); 
+            }
         }
 
+        var houveErro = false;
+        finalizarAguardar(); // limpa msg de erro
+
+    
+        if (nomeVar == "" || emailVar == "" || senhaVar == "" || ConfsenhaVar == "" || fkCargoVar == "" || fkRegiaoVar == "") {
+            houveErro = true;
+            mensagemErro1.innerHTML += "Não podem ter campos vazios! (Selecione Agência e Região)";
+        }
+
+      
         if (!emailVar.includes("@") || !emailVar.endsWith(".com") || emailVar.indexOf("@") === 0 || emailVar.indexOf("@") === emailVar.length - 5 || emailVar[emailVar.indexOf("@") + 1] === '.'
         ) {
             houveErro = true;
             mensagemErro1.innerHTML += "<br>Email está em formato incorreto!";
         }
 
+       
         var temMaiuscula = false;
         var temMinuscula = false;
         var temNumero = false;
@@ -136,23 +176,59 @@
             mensagemErro1.innerHTML += "<br> Senha Fraca! Mínimo 8 caracteres, com Maiúscula, Minúscula, Número e Especial.";
         }
 
+        
         if (ConfsenhaVar !== senhaVar) {
             houveErro = true;
             mensagemErro1.innerHTML += "<br> Confirmação de senha inválida!";
         }
 
-        var checkboxes = document.querySelectorAll('input[name="topicos"]:checked');
-        var topicosSelecionados = [];
-        checkboxes.forEach((checkbox) => {
-            topicosSelecionados.push(checkbox.value);
-        });
-
         if (houveErro) {
             mensagemErro1.style.display = 'block';
             return;
+        }
 
-        } else
-            mensagemErro1.style.display = 'none';
-        alert("Cadastro realizado com sucesso!");
+
+        
+        aguardar(); 
+        // envia pro backend via fetch
+        fetch("/usuarios/cadastrar", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                nomeServer: nomeVar,
+                emailServer: emailVar,
+                senhaServer: senhaVar,
+                // id numerico
+                agenciaServer: fkCargoVar,
+                regiaoServer: fkRegiaoVar,
+                topicosServer: topicosSelecionados
+            })
+        }).then(function (resposta) {
+
+            if (resposta.ok) {
+                finalizarAguardar();
+                mensagemErro1.style.display = "block";
+                mensagemErro1.style.color = "green";
+                mensagemErro1.innerHTML = "Cadastro realizado com sucesso! Redirecionando para Login...";
+
+                setTimeout(function () {
+                    window.location = "TesteLogin.html";
+                }, 2000);
+
+            } else {
+                console.log("Houve um erro ao tentar realizar o cadastro!");
+                resposta.text().then(function (texto) {
+                    finalizarAguardar("Erro ao cadastrar: " + texto);
+                });
+            }
+
+        }).catch(function (erro) {
+            console.log("Erro de conexão:", erro);
+            finalizarAguardar("Erro de rede ao cadastrar. Verifique a API.");
+        });
+
+        return false;
     }
 </script>

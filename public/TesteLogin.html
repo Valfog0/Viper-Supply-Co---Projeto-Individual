@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>Login Viper Supply Co.</title>
+    <link rel="icon" type="image/x-icon" href="assets/favicon.jpg" />
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700" rel="stylesheet" type="text/css" />
+    <link href="css/log.css" rel="stylesheet" />
+
+</head>
+
+<body id="page-top">
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
+        <div class="container">
+            <img class="logo" src="assets/img/Logo_viper_Preto.jpg" alt="Logo Viper">
+            <a class="text" href="index.html"> The Viper Supply Co. </a>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav text-uppercase ms-auto py-4 py-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Início</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#services">Por que Viper?</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#portfolio">Colaboradores</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#about">Sobre</a></li>
+                    <li class="nav-item"><a class="nav-link nav-box" href="TesteCad.html">Cadastro</a></li>
+                    <li class="nav-item"><a class="nav-link nav-box" href="TesteLogin.html">Login</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <div class="log-container">
+            <h1>Entre na sua conta</h1>
+
+            <div class="log-div">
+
+                <label>Email</label>
+                <input type="text" id="input_email" placeholder="Insira o email">
+
+                <label>Senha</label>
+                <input type="password" id="input_senha" placeholder="Insira a senha">
+
+                <button onclick="entrar()">Entrar</button>
+                
+                <div id="div_aguardar" style="display:none; color:blue; margin-top: 10px;">Aguardando...</div>
+                <p id="div_erros_login" style="display:none; color:red; margin-top: 10px;"></p>
+                </div>
+        </div>
+    </main>
+</body>
+
+</html>
+<script>
+    // funcao de loading
+
+    function aguardar() {
+        div_aguardar.style.display = "flex";
+        div_erros_login.style.display = "none";
+    }
+
+    function finalizarAguardar(texto) {
+        div_aguardar.style.display = "none";
+        
+        if (texto) {
+            div_erros_login.innerHTML = texto;
+            div_erros_login.style.display = "flex";
+        } else {
+            div_erros_login.style.display = "none";
+        }
+    }
+
+
+    // login
+    function entrar() {
+        aguardar();
+
+        var emailVar = input_email.value.trim();
+        var senhaVar = input_senha.value;
+        
+  
+        if (emailVar == "" || senhaVar == "") {
+            finalizarAguardar("Email e Senha não podem estar vazios.");
+            return false;
+        }
+
+        // compara via fetch pra realizar autent
+        fetch("/usuarios/autenticar", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                emailServer: emailVar,
+                senhaServer: senhaVar
+            })
+        }).then(function (resposta) {
+
+            if (resposta.ok) {
+                console.log("Login realizado com sucesso!");
+
+                resposta.json().then(function(json) {
+                    console.log(json);
+                    
+                    sessionStorage.EMAIL_USUARIO = json.email;
+                    sessionStorage.ID_USUARIO = json.id;
+
+                    // redirect
+                    setTimeout(function () {
+                        window.location = "./dashboard.html"; 
+                    }, 1000); 
+                });
+
+            } else {
+               
+                console.log("Houve um erro ao tentar realizar o login!");
+                resposta.text().then(function(texto) {
+                    console.error(texto);
+                    finalizarAguardar(texto); // mostra erro no log
+                });
+            }
+
+        }).catch(function (erro) {
+            console.log("Erro de conexão com o servidor:", erro);
+            finalizarAguardar("Falha ao se conectar com o servidor.");
+        });
+
+        return false;
+    }
+</script>
